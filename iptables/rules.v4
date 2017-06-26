@@ -1,0 +1,42 @@
+*filter
+
+#####
+# Chains
+#####
+:INPUT ACCEPT [202744:34641245]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [31749:1832836]
+
+#####
+# General rules
+#####
+# Established connections and loopback
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+
+# Drop invalid packets
+-A INPUT -m conntrack --ctstate INVALID -j DROP
+
+#####
+# Acceptable connections
+#####
+# From local network (accept)
+-A INPUT -s 192.168.0.0/16 -j ACCEPT
+
+# Web server (Internet-wide access), http and https
+#-A INPUT -p tcp --dport 80 -j ACCEPT
+#-A INPUT -p tcp --dport 443 -j ACCEPT
+
+# ssh and mosh from specific IP ranges
+#-A INPUT -p tcp --dport 22 -s <IP range> -j ACCEPT
+#-A INPUT -p udp --dport 60000:61000 -s <IP range> -j ACCEPT
+
+# ping (from anywhere)
+#-A INPUT -p icmp --icmp-type 8 -s 0/0 -d <server IP> -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+#####
+# Drop everything else
+-A INPUT -j DROP
+
+# end
+COMMIT

@@ -1,98 +1,90 @@
-# Set up the prompt
+# ~/.zshrc: Personal settings for zsh
 
-#autoload -Uz promptinit
-#promptinit
-#prompt adam1
-
-setopt histignorealldups sharehistory
-
-# Use emacs keybindings even if our EDITOR is set to vi
-bindkey -e
-
-# Keep 1000 lines of history within the shell and save it to ~/.history:
-HISTSIZE=1000
-SAVEHIST=1000
-HISTFILE=~/.history
-
-# Use modern completion system
-autoload -Uz compinit
-compinit
-
-zstyle ':completion:*' auto-description 'specify: %d'
-zstyle ':completion:*' completer _expand _complete _correct _approximate
-zstyle ':completion:*' format 'Completing %d'
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' menu select=2
-eval "$(dircolors -b)"
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
-zstyle ':completion:*' menu select=long
-zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
-zstyle ':completion:*' verbose true
-
-zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+####################
+# Personal aliases #
+####################
 
 
-#####
-# Customisations
-#####
-
-# Set completion scheme
-unsetopt list_ambiguous
-
-#####
-# Aliases
-#####
-# Alias on ls
-alias ls='ls --classify --tabsize=0 --literal --color=auto --show-control-chars --human-readable'
-
-# Usefull aliases on ls
-alias ll='ls -l'
-alias la='ls -A'
-alias lla='ls -lA'
-
-# Safety (prompt before over-writting a file)
-alias cp='cp --interactive'
-alias mv='mv --interactive'
-alias rm='rm --interactive'
-
-# More aliases
+# Useful aliases
 alias df='df --human-readable'
 alias du='du --human-readable'
-alias free='free --human'
 
-#####
-# Color
-#####
+# Aliases on ls
+alias ll='ls -lh'
+alias la='ls -A'
+alias lla='ls -lah'
 
-# Set shell color (different for root and users)
-#if [ "`id -u`" -eq 0 ]; then
-#  export PS1="%{ESC[36;1m%}%T %{ESC[34m%}%n%{ESC[33m%}@%{ESC[37m%}%m %{ESC[32m%}%~%{ESC[33m%}%#%{ESC[0m%} "
-#else
-#  export PS1="%{ESC[36;1m%}%T %{ESC[31m%}%n%{ESC[33m%}@%{ESC[37m%}%m %{ESC[32m%}%~%{ESC[33m%}%#%{ESC[0m%} "
-#fi
 
-# Color for 'ls' (exporting from LS_COLORS)
-if [ -x /usr/bin/dircolors ]
-then
-  if [ -r ~/.dir_colors ]
-  then
-    eval "`dircolors ~/.dir_colors`"
-  elif [ -r /etc/dir_colors ]
-  then
-    eval "`dircolors /etc/dir_colors`"
-  else
-    eval "`dircolors`"
+
+######################
+# Personal functions #
+######################
+
+case $TERM in
+   xterm*)
+          precmd () {print -Pn "\e]0;%n@%m: %~\a"}
+                 ;;
+                 esac
+
+
+#################################
+# Completion of command options #
+#################################
+
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}'
+zstyle ':completion:*' max-errors 3 numeric
+zstyle ':completion:*' use-compctl false
+
+
+###################
+# History options #
+###################
+
+# Append the new history to the old one
+#setopt append_history
+
+# Each line is added to the history as it is executed
+setopt inc_append_history
+
+# Do not to store a history line if it's the same as the previous one
+setopt hist_ignore_dups
+
+# Remove copies of lines still in the history list, 
+# keeping the newly added one
+#setopt hist_ignore_all_dups
+
+# Remove duplicates when the history fills up, but does nothing until then
+setopt hist_expire_dups_first
+
+# Do not save duplicated lines more than once,
+# whatever options are set for the current session
+#setopt hist_save_no_dups
+
+# Searches backwards with editor commands do not show duplicate lines 
+# more than once, even if they have been saved
+setopt hist_find_no_dups
+
+# Git in shell -- kiwi, d'après une idée de samy
+setopt prompt_subst
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' actionformats \
+    '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{3}|%F{1}%a%F{5}]%f '
+zstyle ':vcs_info:*' formats       \
+    '%F{5}(%f%s%F{5})%F{3}-%F{5}[%F{2}%b%F{5}]%f '
+zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b%F{1}:%F{3}%r'
+zstyle ':vcs_info:*' enable git cvs svn
+vcs_info_wrapper() {
+  vcs_info
+  if [ -n "$vcs_info_msg_0_" ]; then
+    echo "%{$fg[grey]%}${vcs_info_msg_0_}%{$reset_color%}$del"
   fi
-fi
+}
+RPROMPT=$'$(vcs_info_wrapper)'
 
-###########################
-# Oh-my-zsh configuration #
-###########################
+
+#################################
+# Default oh-my-zsh config file #
+#################################
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -179,13 +171,3 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-######
-# Go #
-######
-
-if [ -d /opt/go/bin ]; then
-  export GOROOT=/opt/go
-  export GOPATH=$HOME/srcs/go
-  export PATH=$PATH:$GOROOT/bin
-fi
