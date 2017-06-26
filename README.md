@@ -15,8 +15,8 @@ Configuration file to use a static IP address.
 
 
 ### iptables
-Simple IPv4 rules, for accepting connections from a local network (192.168.0.0/16) and dropping everything else.
-No IPv6 support (everything is dropped).
+Simple IPv4 rules, for accepting connections from a local network (`192.168.0.0/16`) and dropping everything else. No IPv6 support (everything is dropped).
+
 Load the rules with `iptables-restore < rules.v4` and `ip6tables-restore < rules.v6`.
 
 
