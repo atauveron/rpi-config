@@ -3,5 +3,3 @@
 :FORWARD DROP [0:0]
 :OUTPUT ACCEPT [0:0]
 COMMIT
-
-# No IPv6 support

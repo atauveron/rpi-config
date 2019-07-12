@@ -24,8 +24,8 @@
 -A INPUT -s 192.168.0.0/16 -j ACCEPT
 
 # Web server (Internet-wide access), http and https
-#-A INPUT -p tcp --dport 80 -j ACCEPT
-#-A INPUT -p tcp --dport 443 -j ACCEPT
+#-A INPUT -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+#-A INPUT -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
 
 # ssh and mosh from specific IP ranges
 #-A INPUT -p tcp --dport 22 -s <IP range> -j ACCEPT
@@ -38,5 +38,5 @@
 # Drop everything else
 -A INPUT -j DROP
 
-# end
+# Save changes
 COMMIT
