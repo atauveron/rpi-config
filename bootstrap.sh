@@ -31,9 +31,9 @@ sudo apt-get install fail2ban iptables-persistent
 echo
 echo "Installing zsh, installing and configuring oh-my-zsh..."
 sudo apt-get install zsh
-chsh $(which zsh)
+sudo chsh -s $(which zsh) pi
 cp .zshrc $DIR
-git clone git://github.com/robbyrussell/oh-my-zsh.git $DIR/.oh-my-zsh
+git clone https://github.com/robbyrussell/oh-my-zsh.git $DIR/.oh-my-zsh
 export ZSH="$DIR/.oh-my-zsh"
 git clone https://github.com/badouralix/oh-my-via.git $ZSH/custom/themes/oh-my-via
 
